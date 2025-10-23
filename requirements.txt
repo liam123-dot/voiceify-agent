@@ -3,10 +3,13 @@ livekit-agents
 livekit
 
 # AI Model Plugins
-livekit-plugins-openai
-livekit-plugins-deepgram
-livekit-plugins-elevenlabs
-livekit-plugins-silero
+livekit-agents[openai]
+livekit-agents[deepgram]
+livekit-agents[elevenlabs]
+livekit-agents[groq]
+livekit-agents[silero]
+livekit-agents[turn-detector]
+
 livekit-plugins-noise-cancellation
 
 # Utilities
@@ -17,4 +20,8 @@ aiohttp
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http
+
+# RAG / Knowledge Base
+supabase
+openai
 

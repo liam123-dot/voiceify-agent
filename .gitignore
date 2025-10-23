@@ -53,5 +53,5 @@ htmlcov/
 # LiveKit
 livekit.toml
 
-.env.local
+.env.*
 .env

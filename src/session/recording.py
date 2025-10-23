@@ -25,7 +25,7 @@ async def start_call_recording(
     supabase_s3_access_key: str,
     supabase_s3_secret_key: str,
     supabase_s3_region: str,
-) -> Tuple[Optional[str], Optional[str]]:
+) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     """
     Start recording a call using LiveKit Egress.
     
@@ -45,7 +45,7 @@ async def start_call_recording(
         supabase_s3_region: S3 region
         
     Returns:
-        Tuple of (egress_id, recording_filename) or (None, None) on failure
+        Tuple of (egress_id, recording_filename, started_at_unix_ms) or (None, None, None) on failure
         
     Example:
         >>> egress_id, filename = await start_call_recording(
@@ -56,13 +56,16 @@ async def start_call_recording(
     """
     try:
         # Generate unique filename with timestamp
-        timestamp = datetime.utcnow().isoformat().replace(":", "-").replace(".", "-")
-        recording_filename = f"{organization_id}/{session_id}/{room_name}-{timestamp}.mp4"
+        recording_filename = f"{organization_id}/{room_name}.mp4"
         
-        logger.info(f"Starting call recording: {recording_filename}")
+        logger.info(f"🎬 Starting call recording for room: {room_name}")
+        logger.debug(f"📁 Recording filename: {recording_filename}")
         
         # Configure S3 upload to Supabase
         s3_endpoint = f"https://{supabase_project_ref}.supabase.co/storage/v1/s3"
+        logger.debug(f"☁️  S3 endpoint: {s3_endpoint}")
+        logger.debug(f"🗂️  S3 bucket: call-recordings")
+        logger.debug(f"🌍 S3 region: {supabase_s3_region}")
         
         # Create the egress request using the new API
         req = api.RoomCompositeEgressRequest(
@@ -84,23 +87,31 @@ async def start_call_recording(
         )
         
         # Create LiveKit API client and start recording
+        logger.debug(f"🔗 Creating LiveKit API client: {livekit_url}")
         lkapi = api.LiveKitAPI(
             url=livekit_url,
             api_key=livekit_api_key,
             api_secret=livekit_api_secret,
         )
         
+        logger.debug("📡 Starting room composite egress...")
         res = await lkapi.egress.start_room_composite_egress(req)
         await lkapi.aclose()
         
         egress_id = res.egress_id
-        logger.info(f"Call recording started with egress ID: {egress_id}")
+        started_at_unix_ms = res.started_at  # Unix timestamp in milliseconds
+        logger.info(f"✅ Call recording started successfully!")
+        logger.info(f"   Egress ID: {egress_id}")
+        logger.info(f"   Started At: {started_at_unix_ms}")
+        logger.info(f"   Filename: {recording_filename}")
+        logger.info(f"   Room: {room_name}")
         
-        return egress_id, recording_filename
+        return egress_id, recording_filename, started_at_unix_ms
         
     except Exception as e:
-        logger.error(f"Failed to start call recording: {e}")
-        return None, None
+        logger.error(f"❌ Failed to start call recording: {e}")
+        logger.exception("Full error details:")
+        return None, None, None
 
 
 def get_recording_url(

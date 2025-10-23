@@ -43,12 +43,14 @@ RUN adduser \
 
 # Pre-download ML models (VAD, etc.) to avoid runtime downloads
 # This improves startup time and reliability
-RUN python -c "from livekit.plugins import silero; silero.VAD.load()"
+
 
 # Set proper permissions
 RUN chown -R appuser:appuser /app
 USER appuser
 
+RUN python -m src.agent download-files
+RUN python -c "from livekit.plugins import silero; silero.VAD.load()"
 # Set production mode
 ENV PYTHONPATH=/app
 

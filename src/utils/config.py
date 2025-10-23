@@ -21,6 +21,7 @@ class Config:
         livekit_api_key: LiveKit API key
         livekit_api_secret: LiveKit API secret
         openai_api_key: OpenAI API key (optional)
+        groq_api_key: Groq API key (optional)
         deepgram_api_key: Deepgram API key (optional)
         elevenlabs_api_key: ElevenLabs API key (optional)
         supabase_project_ref: Supabase project reference
@@ -37,6 +38,7 @@ class Config:
     
     # Optional AI provider keys (at least one STT, LLM, TTS needed)
     openai_api_key: Optional[str] = None
+    groq_api_key: Optional[str] = None
     deepgram_api_key: Optional[str] = None
     elevenlabs_api_key: Optional[str] = None
     
@@ -88,8 +90,9 @@ class Config:
             livekit_api_key=os.getenv("LIVEKIT_API_KEY"),
             livekit_api_secret=os.getenv("LIVEKIT_API_SECRET"),
             openai_api_key=os.getenv("OPENAI_API_KEY"),
+            groq_api_key=os.getenv("GROQ_API_KEY"),
             deepgram_api_key=os.getenv("DEEPGRAM_API_KEY"),
-            elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY"),
+            elevenlabs_api_key=os.getenv("ELEVEN_API_KEY"),
             supabase_project_ref=os.getenv("SUPABASE_PROJECT_REF"),
             supabase_s3_access_key=os.getenv("SUPABASE_S3_ACCESS_KEY"),
             supabase_s3_secret_key=os.getenv("SUPABASE_S3_SECRET_KEY"),
@@ -110,6 +113,7 @@ class Config:
         logger.info(f"  API_URL: {self.api_url}")
         logger.info(f"  LIVEKIT_URL: {self.livekit_url}")
         logger.info(f"  OPENAI_API_KEY: {'SET' if self.openai_api_key else 'NOT SET'}")
+        logger.info(f"  GROQ_API_KEY: {'SET' if self.groq_api_key else 'NOT SET'}")
         logger.info(f"  DEEPGRAM_API_KEY: {'SET' if self.deepgram_api_key else 'NOT SET'}")
         logger.info(f"  ELEVENLABS_API_KEY: {'SET' if self.elevenlabs_api_key else 'NOT SET'}")
         logger.info(f"  LANGFUSE: {'ENABLED' if self.langfuse_host and self.langfuse_public_key and self.langfuse_secret_key else 'DISABLED'}")
